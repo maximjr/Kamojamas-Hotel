@@ -1,0 +1,8 @@
+{
+  "name": "KAMOJAMAS Villa and Suite",
+  "description": "An outstanding, modern, high-end luxury hotel website for KAMOJAMAS Villa and Suite. Cinematic experience with premium amenities and elegant suites.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": []
+}
