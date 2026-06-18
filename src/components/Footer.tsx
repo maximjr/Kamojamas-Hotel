@@ -68,8 +68,7 @@ const Footer = React.memo(() => {
               </li>
               <li>
                  <p className="text-[9px] uppercase tracking-widest text-white/30 font-bold mb-1">Phone</p>
-                 <a href="tel:+2349072259725" className="hover:text-gold transition-colors">+234 907 225 9725</a><br/>
-                 <a href="tel:+2349046525757" className="hover:text-gold transition-colors">+234 904 652 5757</a>
+                 <a href="tel:+2349072259725" className="hover:text-gold transition-colors">+234 907 225 9725</a>  <a href="tel:+2349046525757" className="hover:text-gold transition-colors">+234 904 652 5757</a>
               </li>
               <li>
                  <p className="text-[9px] uppercase tracking-widest text-white/30 font-bold mb-1">Address</p>

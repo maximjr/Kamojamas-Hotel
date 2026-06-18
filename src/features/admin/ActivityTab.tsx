@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { format } from "date-fns";
 import { motion } from "motion/react";
 import { 
-  Search, Filter, Download, Activity, User, Calendar, Shield, Settings, 
+  Search, Filter, Download, Activity as ActivityIcon, User, Calendar, Shield, Settings, 
   ChevronRight, Laptop, FileText, UserPlus, FileEdit, LogOut, CheckCircle2,
   Clock
 } from "lucide-react";
@@ -14,7 +14,7 @@ export function ActivityTab({ activityLogs, getDate }: any) {
   const enrichedLogs = useMemo(() => {
     return activityLogs.map((log: any) => {
       let category = "System";
-      let icon = Activity;
+      let icon = ActivityIcon;
       let color = "text-gray-500 bg-gray-100 border-gray-200";
 
       const type = (log.activityType || log.action || "").toUpperCase();
@@ -201,7 +201,7 @@ export function ActivityTab({ activityLogs, getDate }: any) {
                      <tr>
                         <td colSpan={5} className="px-6 py-16 text-center text-gray-500">
                            <div className="w-14 h-14 rounded-full bg-gray-50 border border-gray-100 shadow-sm flex items-center justify-center mx-auto mb-4">
-                              <Activity className="h-6 w-6 text-gray-400" />
+                              <ActivityIcon className="h-6 w-6 text-gray-400" />
                            </div>
                            <p className="font-semibold text-gray-900 text-lg">No activity logs found</p>
                            <p className="text-sm mt-1 mb-6 text-gray-500 max-w-sm mx-auto text-center">We couldn't find any activities matching your current filters or search term.</p>

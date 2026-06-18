@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { doc, updateDoc, addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import { motion, AnimatePresence } from "motion/react";
-import { Search, Shield, Activity, UserPlus, X, Edit, Lock, CheckCircle2, User, Key, UserCheck, Check, Info } from "lucide-react";
+import { Search, Shield, Activity as ActivityIcon, UserPlus, X, Edit, Lock, CheckCircle2, User, Key, UserCheck, Check, Info } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 
 const ROLES = [
@@ -305,7 +305,7 @@ export function StaffTab({ users, activityLogs, getDate }: { users: any[], activ
                            {/* Activity Preview section could go here */}
                            <div>
                               <h4 className="font-semibold text-gray-900 border-b border-gray-100 pb-2 mb-4 flex items-center gap-2">
-                                 <Activity size={16} className="text-gray-400" /> Recent Activity Log
+                                 <ActivityIcon size={16} className="text-gray-400" /> Recent Activity Log
                               </h4>
                               <div className="space-y-3">
                                  {activityLogs

@@ -4,7 +4,7 @@ import SEO from "../components/SEO";
 import { db } from "../lib/firebase";
 import { collection, query, orderBy, limit, doc, updateDoc, onSnapshot } from "firebase/firestore";
 import { format, isSameDay } from "date-fns";
-import { Users, Calendar, TrendingUp, Activity, Home, Menu, LogOut, Globe, Bell, Bed, X, Search, ChevronRight, ChevronsLeft, ChevronsRight, User, Plus, Shield } from "lucide-react";
+import { Users, Calendar, TrendingUp, Activity as ActivityIcon, Home, Menu, LogOut, Globe, Bell, Bed, X, Search, ChevronRight, ChevronsLeft, ChevronsRight, User, Plus, Shield } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { motion, AnimatePresence } from "motion/react";
 import { useRooms } from "../hooks/useRooms";
@@ -126,7 +126,7 @@ export default function Admin() {
     { id: "staff", label: "Staff & Roles", icon: Shield },
     { id: "visitors", label: "Visitors", icon: Globe },
     { id: "analytics", label: "Analytics", icon: TrendingUp },
-    { id: "activity", label: "Activity Logs", icon: Activity },
+    { id: "activity", label: "Activity Logs", icon: ActivityIcon },
   ];
 
   const chartData = useMemo(() => {

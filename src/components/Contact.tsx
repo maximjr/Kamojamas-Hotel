@@ -75,8 +75,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="text-oxblood font-serif font-bold text-xl mb-2 group-hover:text-gold transition-colors duration-500">Phone Inquiries</h4>
-                  <p className="text-gray-500 font-light mb-1">+234 907 225 9725</p>
-                  <p className="text-gray-500 font-light">+234 904 652 5757</p>
+                  <p className="text-gray-500 font-light mb-1">+234 907 225 9725  +234 904 652 5757</p>
                 </div>
               </div>
 

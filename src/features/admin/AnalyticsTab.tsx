@@ -3,7 +3,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, Legend
 } from 'recharts';
-import { TrendingUp, Users, CalendarDays, Bed, DollarSign, Activity } from 'lucide-react';
+import { TrendingUp, Users, CalendarDays, Bed, DollarSign, Activity as ActivityIcon } from 'lucide-react';
 import { format, subDays, differenceInDays } from 'date-fns';
 import { formatCurrency } from '../../utils';
 
@@ -123,7 +123,7 @@ export function AnalyticsTab({ chartData, reservations }: any) {
             <div className="text-xs text-green-600 flex items-center gap-1 font-medium"><TrendingUp size={12}/> +5% vs last week</div>
          </div>
          <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col gap-2">
-            <div className="flex items-center gap-2 text-gray-500 mb-1"><Activity size={16} /> <span className="text-xs font-semibold uppercase tracking-wider">Avg Occupancy</span></div>
+            <div className="flex items-center gap-2 text-gray-500 mb-1"><ActivityIcon size={16} /> <span className="text-xs font-semibold uppercase tracking-wider">Avg Occupancy</span></div>
             <div className="text-2xl font-bold text-gray-900">76%</div>
             <div className="text-xs text-oxblood flex items-center gap-1 font-medium"><TrendingUp size={12}/> High Demand</div>
          </div>
