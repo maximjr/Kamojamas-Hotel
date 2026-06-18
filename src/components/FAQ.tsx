@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "motion/react";
 import { useState } from "react";
-import { ChevronDown, Plus, Minus } from "lucide-react";
+import { Plus, Minus } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const FAQ = () => {
   const [activeIndex, setActiveIndex] = useState<number | null>(0);
@@ -29,59 +30,72 @@ const FAQ = () => {
   ];
 
   return (
-    <section className="py-24 md:py-32 bg-white">
-      <div className="container mx-auto px-6 md:px-12">
-        <div className="grid lg:grid-cols-2 gap-20 items-center">
+    <section className="py-24 md:py-32 bg-paper overflow-hidden h-full relative">
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gold/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="container mx-auto px-6 md:px-12 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-20 items-start">
           <motion.div
              initial={{ opacity: 0, x: -30 }}
              whileInView={{ opacity: 1, x: 0 }}
-             viewport={{ once: true }}
+             viewport={{ once: true, margin: "-100px" }}
+             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           >
-             <span className="text-gold uppercase tracking-[0.3em] text-xs font-bold block mb-4">Concierge Desk</span>
-             <h2 className="text-oxblood font-serif text-4xl md:text-5xl mb-8 leading-tight">
-               Frequently Asked <br />
-               <span className="italic luxury-text-gradient">Questions</span>
+             <div className="flex items-center gap-4 mb-6">
+                 <div className="w-8 h-px bg-gold/50" />
+                 <span className="text-gold uppercase tracking-[0.4em] text-xs font-bold block">Concierge Desk</span>
+             </div>
+             <h2 className="text-oxblood font-serif text-4xl md:text-6xl lg:text-7xl mb-8 leading-[1.1] tracking-tight">
+               Common <br />
+               <span className="italic font-light text-oxblood/80">Inquiries</span>
              </h2>
-             <p className="text-gray-500 font-light mb-12">
-               Find answers to the most common inquiries our guests have. For any other questions, our digital concierge is available 24/7 via the KAMOJAMAS app.
+             <p className="text-gray-500 font-light mb-12 text-sm md:text-base leading-relaxed">
+               Find answers to the most common queries our guests have. For any other questions or personalized requests, our digital concierge is available 24/7.
              </p>
-             <div className="relative rounded-2xl overflow-hidden aspect-video shadow-2xl group cursor-pointer">
+             <div className="relative overflow-hidden aspect-[4/3] shadow-lg group">
                 <img 
                    src="https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&q=80&w=800" 
-                   alt="Lobby Desk" 
-                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                   alt="Elegant 24/7 guest service and front desk lobby concierge at Kamojamas Villa Hotel & Suite" 
+                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[1.5s]"
                    referrerPolicy="no-referrer"
+                   loading="lazy"
+                   decoding="async"
                 />
-                <div className="absolute inset-0 bg-oxblood/10 group-hover:bg-oxblood/0 transition-all duration-500" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="bg-white/90 backdrop-blur-md p-8 rounded-full shadow-xl">
-                       <span className="text-oxblood font-serif text-xl italic">Ask Anything</span>
-                    </div>
+                
+                {/* Overlay shadow for image */}
+                <div className="absolute inset-0 bg-oxblood/20 group-hover:bg-oxblood/0 transition-colors duration-700" />
+                
+                <div className="absolute inset-0 flex flex-col justify-end p-8 bg-gradient-to-t from-oxblood/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                    <Link to="/contact">
+                       <button className="bg-gold px-8 py-4 text-oxblood font-bold text-[10px] uppercase tracking-widest hover:bg-white transition-colors">
+                          Contact Us
+                       </button>
+                    </Link>
                 </div>
              </div>
           </motion.div>
 
-          <div className="space-y-4">
+          {/* Accordion Questions */}
+          <div className="space-y-0 mt-8 lg:mt-0">
             {faqs.map((faq, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className={`border border-gray-100 rounded-2xl overflow-hidden transition-all duration-300 ${
-                  activeIndex === index ? "bg-gray-50 border-gold/30 shadow-lg" : "hover:bg-gray-50"
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ delay: index * 0.15, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className={`border-b border-gray-200 overflow-hidden transition-colors duration-500 hover:border-gold/50 ${
+                  activeIndex === index ? "border-gold" : ""
                 }`}
               >
                 <button
                   onClick={() => setActiveIndex(activeIndex === index ? null : index)}
-                  className="w-full px-8 py-6 flex justify-between items-center text-left"
+                  className="w-full py-8 flex justify-between items-center text-left group"
                 >
-                  <span className={`text-lg font-serif transition-colors ${activeIndex === index ? "text-gold" : "text-oxblood"}`}>
+                  <span className={`text-lg md:text-xl font-serif pr-8 transition-colors duration-300 ${activeIndex === index ? "text-gold italic" : "text-oxblood group-hover:text-gold"}`}>
                     {faq.question}
                   </span>
-                  <div className={`transition-transform duration-300 ${activeIndex === index ? "rotate-180" : ""}`}>
-                     {activeIndex === index ? <Minus size={20} className="text-gold" /> : <Plus size={20} className="text-gray-400" />}
+                  <div className={`transition-transform duration-500 ease-[0.16,1,0.3,1] ${activeIndex === index ? "rotate-90 scale-110" : ""}`}>
+                     {activeIndex === index ? <Minus size={20} className="text-gold" /> : <Plus size={20} className="text-gray-300 group-hover:text-gold transition-colors duration-300" />}
                   </div>
                 </button>
                 <AnimatePresence>
@@ -90,9 +104,9 @@ const FAQ = () => {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                     >
-                      <div className="px-8 pb-8 text-gray-500 font-light leading-relaxed">
+                      <div className="pb-10 pr-12 text-gray-500 font-light leading-relaxed text-sm">
                         {faq.answer}
                       </div>
                     </motion.div>

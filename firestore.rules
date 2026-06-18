@@ -1,0 +1,120 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    
+    // Auth Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isSuperAdmin() {
+      return isSignedIn() && (
+        ("email" in request.auth.token && request.auth.token.email != null && request.auth.token.email.lower() in ["obenmaxjr@gmail.com", "njeirheinard@gmail.com"]) ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && getUserData().role == "SUPER_ADMIN")
+      );
+    }
+
+    function isAdmin() {
+      return isSuperAdmin() || (
+        isSignedIn() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+        getUserData().role in ["ADMIN", "MANAGER", "RECEPTIONIST", "ACCOUNTANT", "STAFF"]
+      );
+    }
+
+    // Role-based specific checks (example layout for further granularity)
+    function canManageStaff() {
+      return isSuperAdmin() || (isSignedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && getUserData().role in ["ADMIN"]);
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    function incoming() {
+      return request.resource.data;
+    }
+    
+    function existing() {
+      return resource.data;
+    }
+
+    // 1. Users Collection
+    match /users/{userId} {
+      // Users can read themselves, admins can read all
+      allow read: if isOwner(userId) || isAdmin();
+      
+      // Creation: Only allow users to create themselves as USER unless initiated by super admin
+      allow create: if isSignedIn() && isOwner(userId) 
+        && incoming().role == "USER"
+        || (isSignedIn() && isOwner(userId) && incoming().role == "SUPER_ADMIN" && "email" in request.auth.token && request.auth.token.email != null && request.auth.token.email.lower() in ["obenmaxjr@gmail.com", "njeirheinard@gmail.com"]);
+      
+      // Updating: Users can only update non-role fields. Manage staff can update roles.
+      allow update: if (isOwner(userId) && !incoming().diff(existing()).affectedKeys().hasAny(['role']))
+                    || canManageStaff();
+      
+      allow delete: if isSuperAdmin();
+    }
+    
+    // Admins Collection (Strictly for assigning roles to other users)
+    match /admins/{userId} {
+       allow read: if isAdmin();
+       allow write: if isSuperAdmin(); // ONLY super admin can add other admins
+     }
+
+    // 2. Rooms Collection (Publicly readable, Admin writeable)
+    match /rooms/{roomId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 3. Reservations Collection
+    match /reservations/{reservationId} {
+      allow read: if isSignedIn() && (isOwner(resource.data.userId) || isAdmin());
+      // For create: validate price, status, payment state (ideally verified via Cloud Functions)
+      // but assuming frontend submission for now with strict identity check
+      allow create: if isSignedIn() 
+        && incoming().userId == request.auth.uid
+        && incoming().status in ['Pending', 'Confirmed']
+        && incoming().keys().hasAll(['userId', 'userName', 'email', 'roomId', 'roomType', 'checkIn', 'checkOut', 'guests', 'totalPrice', 'createdAt', 'status']);
+      // Users can cancel their own, Admins can update status
+      allow update: if isAdmin() || (isOwner(existing().userId) && incoming().diff(existing()).affectedKeys().hasOnly(['status']) && incoming().status == 'Cancelled');
+      allow delete: if isAdmin();
+    }
+    
+    // 4. Analytics & Tracking (Visitor Sessions / Activity Logs)
+    match /activeVisitors/{sessionId} {
+      allow read: if isAdmin();
+      // Allow creation & pulse updates from any visitor, with safe boundaries
+      allow create, update: if true
+                    && incoming().page is string 
+                    && incoming().page.size() < 250;
+      allow delete: if isAdmin();
+    }
+
+    match /userActivityLogs/{logId} {
+      allow read: if isAdmin();
+      allow create: if true 
+                    && incoming().keys().hasAll(['activityType', 'timestamp'])
+                    && incoming().activityType is string
+                    && incoming().activityType.size() < 100;
+      allow update, delete: if false; // Immutable logs
+    }
+    
+    match /adminAuditLogs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update, delete: if false; // Immutable audit trails
+    }
+  }
+}
