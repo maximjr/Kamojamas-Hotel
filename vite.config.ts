@@ -21,15 +21,7 @@ export default defineConfig(({mode}) => {
       cssMinify: true,
       rollupOptions: {
         output: {
-          manualChunks(id) {
-            if (id.includes('node_modules')) {
-              if (id.includes('react')) return 'vendor-react';
-              if (id.includes('framer-motion') || id.includes('motion')) return 'vendor-motion';
-              if (id.includes('firebase')) return 'vendor-firebase';
-              if (id.includes('recharts')) return 'vendor-recharts';
-              return 'vendor-core';
-            }
-          }
+          // Use Vite's default chunking strategy
         }
       }
     }

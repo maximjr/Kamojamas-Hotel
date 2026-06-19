@@ -81,12 +81,9 @@ service cloud.firestore {
     // 3. Reservations Collection
     match /reservations/{reservationId} {
       allow read: if isSignedIn() && (isOwner(resource.data.userId) || isAdmin());
-      // For create: validate price, status, payment state (ideally verified via Cloud Functions)
-      // but assuming frontend submission for now with strict identity check
-      allow create: if isSignedIn() 
-        && incoming().userId == request.auth.uid
-        && incoming().status in ['Pending', 'Confirmed']
-        && incoming().keys().hasAll(['userId', 'userName', 'email', 'roomId', 'roomType', 'checkIn', 'checkOut', 'guests', 'totalPrice', 'createdAt', 'status']);
+      // Users MUST use the createReservation Cloud Function to book rooms safely.
+      // This enforces atomic double-booking checks and price verification.
+      allow create: if false; 
       // Users can cancel their own, Admins can update status
       allow update: if isAdmin() || (isOwner(existing().userId) && incoming().diff(existing()).affectedKeys().hasOnly(['status']) && incoming().status == 'Cancelled');
       allow delete: if isAdmin();
@@ -98,16 +95,22 @@ service cloud.firestore {
       // Allow creation & pulse updates from any visitor, with safe boundaries
       allow create, update: if true
                     && incoming().page is string 
-                    && incoming().page.size() < 250;
+                    && incoming().page.size() < 250
+                    && (!('device' in incoming()) || (incoming().device is string && incoming().device.size() < 100))
+                    && (!('country' in incoming()) || (incoming().country is string && incoming().country.size() < 100))
+                    && (!('userName' in incoming()) || (incoming().userName is string && incoming().userName.size() < 100));
       allow delete: if isAdmin();
     }
 
     match /userActivityLogs/{logId} {
       allow read: if isAdmin();
-      allow create: if true 
-                    && incoming().keys().hasAll(['activityType', 'timestamp'])
+      allow create: if isSignedIn() 
+                    && incoming().keys().hasAll(['activityType', 'timestamp', 'userId'])
+                    && incoming().userId == request.auth.uid
                     && incoming().activityType is string
-                    && incoming().activityType.size() < 100;
+                    && incoming().activityType.size() < 100
+                    && (!('userName' in incoming()) || (incoming().userName is string && incoming().userName.size() < 100))
+                    && (!('pageVisited' in incoming()) || (incoming().pageVisited is string && incoming().pageVisited.size() < 100));
       allow update, delete: if false; // Immutable logs
     }
     

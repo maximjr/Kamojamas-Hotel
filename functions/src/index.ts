@@ -75,14 +75,16 @@ export const validateReservation = functions.firestore
     const overlapping = await db.collection('reservations')
       .where('roomId', '==', data.roomId)
       .where('status', 'in', ['Confirmed', 'Pending'])
-      .where('checkOut', '>', data.checkIn)
+      .where('checkOut', '>', inDate)
       .get();
     
     let conflict = false;
     overlapping.forEach(doc => {
       if (doc.id === context.params.reservationId) return;
       const existing = doc.data();
-      if (existing.checkIn.toMillis() < data.checkOut.toMillis() && existing.checkOut.toMillis() > data.checkIn.toMillis()) {
+      const existingIn = existing.checkIn?.toDate ? existing.checkIn.toDate() : new Date(existing.checkIn);
+      const existingOut = existing.checkOut?.toDate ? existing.checkOut.toDate() : new Date(existing.checkOut);
+      if (existingIn.getTime() < outDate.getTime() && existingOut.getTime() > inDate.getTime()) {
         conflict = true;
       }
     });
@@ -152,7 +154,7 @@ export const createReservation = functions.https.onCall(async (data, context) =>
     const overlappingQuery = db.collection('reservations')
       .where('roomId', '==', roomRef.id)
       .where('status', 'in', ['Confirmed', 'Pending'])
-      .where('checkOut', '>', checkIn);
+      .where('checkOut', '>', inDate);
 
     const overlappingSnap = await t.get(overlappingQuery);
     

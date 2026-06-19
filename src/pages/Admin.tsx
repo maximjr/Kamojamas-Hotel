@@ -78,7 +78,7 @@ export default function Admin() {
         setActivityLogs(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     });
 
-    const visitorsQuery = query(collection(db, "activeVisitors"), orderBy("lastActive", "desc"));
+    const visitorsQuery = query(collection(db, "activeVisitors"), orderBy("lastActive", "desc"), limit(100));
     const unsubVisitors = onSnapshot(visitorsQuery, (snapshot) => {
         const now = Date.now();
         const active = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
